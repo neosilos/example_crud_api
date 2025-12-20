@@ -15,3 +15,11 @@ export async function createPerson(person) {
 
   return response.json();
 }
+
+export async function getPeople(){
+    const response = await fetch(`${API_URL}/api/persons/`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch persons");
+    }
+    return response.json();
+}
