@@ -6,6 +6,9 @@ class Person(models.Model):
     """
     person_name = models.CharField(max_length=255)
     hobbies = models.JSONField()
+    media_raw = models.TextField(blank=True, null=True, help_text="Números separados por vírgula para o cálculo da média")
+    desvio_raw = models.TextField(blank=True, null=True, help_text="Números separados por vírgula para o cálculo do desvio padrão")
+    stats = models.JSONField(blank=True, null=True, default=dict)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 

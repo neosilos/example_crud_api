@@ -4,26 +4,32 @@ function PersonForm({ person, onSubmit, onCancel }) {
   const getInitialName = () => person?.person_name || '';
   const getInitialHobbies = () => {
     if (!person?.hobbies) return '';
-    const hobbiesArray = Array.isArray(person.hobbies) 
-      ? person.hobbies 
+    const hobbiesArray = Array.isArray(person.hobbies)
+      ? person.hobbies
       : [person.hobbies];
     return hobbiesArray.join(', ');
   };
 
   const [personName, setPersonName] = useState(getInitialName);
   const [hobbies, setHobbies] = useState(getInitialHobbies);
+  const [mediaRaw, setMediaRaw] = useState('');
+  const [desvioRaw, setDesvioRaw] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (person) {
       setPersonName(person.person_name || '');
-      const hobbiesArray = Array.isArray(person.hobbies) 
-        ? person.hobbies 
+      const hobbiesArray = Array.isArray(person.hobbies)
+        ? person.hobbies
         : (person.hobbies ? [person.hobbies] : []);
       setHobbies(hobbiesArray.join(', '));
+      setMediaRaw(person.media_raw || '');
+      setDesvioRaw(person.desvio_raw || '');
     } else {
       setPersonName('');
       setHobbies('');
+      setMediaRaw('');
+      setDesvioRaw('');
     }
     setError('');
   }, [person]);
@@ -46,10 +52,14 @@ function PersonForm({ person, onSubmit, onCancel }) {
       await onSubmit({
         person_name: personName.trim(),
         hobbies: hobbiesArray,
+        media_raw: mediaRaw,
+        desvio_raw: desvioRaw,
       });
 
       setPersonName('');
       setHobbies('');
+      setMediaRaw('');
+      setDesvioRaw('');
     } catch (err) {
       setError(err.message || 'An error occurred');
     }
@@ -57,24 +67,36 @@ function PersonForm({ person, onSubmit, onCancel }) {
 
   return (
     <div>
-      <h5>{person ? 'Edit Person' : 'Create Person'}</h5>
+      <h5>{person ? 'Editar Pessoa' : 'Criar Pessoa'}</h5>
       <form onSubmit={handleSubmit}>
         <input
           className="form-control mb-2"
-          placeholder="Person name"
+          placeholder="Nome da pessoa"
           value={personName}
           onChange={(e) => setPersonName(e.target.value)}
         />
         <input
           className="form-control mb-2"
-          placeholder="Hobbies (comma separated)"
+          placeholder="Hobbies (separados por vírgula)"
           value={hobbies}
           onChange={(e) => setHobbies(e.target.value)}
+        />
+        <input
+          className="form-control mb-2"
+          placeholder="Média (números separados por vírgula)"
+          value={mediaRaw}
+          onChange={(e) => setMediaRaw(e.target.value)}
+        />
+        <input
+          className="form-control mb-2"
+          placeholder="Desvio Padrão (números separados por vírgula)"
+          value={desvioRaw}
+          onChange={(e) => setDesvioRaw(e.target.value)}
         />
         {error && <div className="text-danger mb-2">{error}</div>}
         <div className="d-flex gap-2">
           <button type="submit" className="btn btn-primary">
-            {person ? 'Update' : 'Create'}
+            {person ? 'Atualizar' : 'Criar'}
           </button>
           {person && onCancel && (
             <button
