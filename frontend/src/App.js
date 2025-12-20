@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import { testConnection } from "./api";
 import PersonForm from "./components/PersonForm";
 import PersonList from "./components/PersonList";
-
+import { createPerson } from "./api";
 function App() {    
-  const [persons, setPersons] = useState([
-    { id: 1, name: "Alice", hobbies: ["reading", "cycling"] },
-    { id: 2, name: "Alice2", hobbies: ["reading2", "cycling2"] },
-  ]);
+  const [persons, setPersons] = useState([]);
+
+  const handleCreatePerson = async (person_data) => {
+    const newPerson = await createPerson(person_data);
+    setPersons((prevPersons) => [...prevPersons, newPerson]);
+  }
 
   return (
     <div className="container mt-4">
         <h3>Person CRUD Demo</h3>
 
-        <PersonForm/>
+        <PersonForm onCreatePerson={handleCreatePerson}/>
         <PersonList persons={persons}/>
     </div>
   )
