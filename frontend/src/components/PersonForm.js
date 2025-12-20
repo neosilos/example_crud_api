@@ -13,6 +13,7 @@ function PersonForm({ person, onSubmit, onCancel }) {
   const [personName, setPersonName] = useState(getInitialName);
   const [hobbies, setHobbies] = useState(getInitialHobbies);
   const [mediaRaw, setMediaRaw] = useState('');
+  const [varianciaRaw, setVarianciaRaw] = useState('');
   const [desvioRaw, setDesvioRaw] = useState('');
   const [error, setError] = useState('');
 
@@ -24,11 +25,13 @@ function PersonForm({ person, onSubmit, onCancel }) {
         : (person.hobbies ? [person.hobbies] : []);
       setHobbies(hobbiesArray.join(', '));
       setMediaRaw(person.media_raw || '');
+      setVarianciaRaw(person.variancia_raw || '');
       setDesvioRaw(person.desvio_raw || '');
     } else {
       setPersonName('');
       setHobbies('');
       setMediaRaw('');
+      setVarianciaRaw('');
       setDesvioRaw('');
     }
     setError('');
@@ -53,12 +56,14 @@ function PersonForm({ person, onSubmit, onCancel }) {
         person_name: personName.trim(),
         hobbies: hobbiesArray,
         media_raw: mediaRaw,
+        variancia_raw: varianciaRaw,
         desvio_raw: desvioRaw,
       });
 
       setPersonName('');
       setHobbies('');
       setMediaRaw('');
+      setVarianciaRaw('');
       setDesvioRaw('');
     } catch (err) {
       setError(err.message || 'An error occurred');
@@ -86,6 +91,12 @@ function PersonForm({ person, onSubmit, onCancel }) {
           placeholder="Média (números separados por vírgula)"
           value={mediaRaw}
           onChange={(e) => setMediaRaw(e.target.value)}
+        />
+        <input
+          className="form-control mb-2"
+          placeholder="Variância (números separados por vírgula)"
+          value={varianciaRaw}
+          onChange={(e) => setVarianciaRaw(e.target.value)}
         />
         <input
           className="form-control mb-2"
