@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-    ComposedChart, AlignGrid, BarChart, Bar, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
+    ComposedChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 
 function StatsCharts({ person }) {
