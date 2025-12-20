@@ -11,4 +11,4 @@ docker compose exec web python manage.py makemigrations
 docker compose exec web python manage.py migrate
 
 # Create superuser (optional)
-docker compose exec web python manage.py createsuperuser
+# docker compose exec web python manage.py createsuperuser
