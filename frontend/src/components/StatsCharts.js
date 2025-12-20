@@ -1,52 +1,21 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     ComposedChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 
 function StatsCharts({ person }) {
-    if (!person) return null;
+    if (!person || !person.stats) return null;
 
-    const { media_raw, variancia_raw, desvio_raw, stats } = person;
+    const { stats } = person;
 
-    const parseNumbers = (raw) => {
-        if (!raw) return [];
-        return raw.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
-    };
+    const getStat = (val) => (typeof val === 'number' ? val : 0);
 
-    const getStatValue = (val, key) => {
-        if (typeof val === 'number') return val;
-        if (val && typeof val === 'object' && val[key]) return val[key];
-        return 0;
-    };
+    const meanValue = getStat(stats.media);
+    const stdDevValue = getStat(stats.desvio);
 
-    const meanData = useMemo(() => {
-        const numbers = parseNumbers(media_raw);
-        return numbers.map((val, idx) => ({ index: idx + 1, value: val }));
-    }, [media_raw]);
-
-    const meanValue = getStatValue(stats?.media, 'media');
-
-
-    const varianceData = useMemo(() => {
-        const numbers = parseNumbers(variancia_raw);
-        return numbers.map((val, idx) => ({ index: idx + 1, value: val }));
-    }, [variancia_raw]);
-
-    const stdDevData = useMemo(() => {
-        const numbers = parseNumbers(desvio_raw);
-        if (numbers.length === 0) return [];
-
-        const localMean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-
-        return numbers.map((val, idx) => ({
-            index: idx + 1,
-            value: val,
-            deviation: Math.abs(val - localMean)
-        }));
-    }, [desvio_raw]);
-
-    const stdDevValue = getStatValue(stats?.desvio, 'desvio');
-
+    const meanData = stats.media_chart || [];
+    const varianceData = stats.variancia_chart || [];
+    const stdDevData = stats.desvio_chart || [];
 
     return (
         <div className="mt-3">

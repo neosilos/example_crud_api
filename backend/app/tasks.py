@@ -35,6 +35,9 @@ def calculate_person_stats(person_id):
         # Média Input -> Calcular Média
         if media_vals:
             results['media'] = statistics.mean(media_vals)
+            results['media_chart'] = [{'index': i+1, 'value': v} for i, v in enumerate(media_vals)]
+        else:
+            results['media_chart'] = []
         
         # Variância Input -> Calcular Variância
         if variancia_vals:
@@ -42,6 +45,9 @@ def calculate_person_stats(person_id):
                 results['variancia'] = statistics.variance(variancia_vals)
              else:
                 results['variancia'] = 0.0
+             results['variancia_chart'] = [{'index': i+1, 'value': v} for i, v in enumerate(variancia_vals)]
+        else:
+            results['variancia_chart'] = []
 
         # Desvio Padrão Input -> Calcular Desvio Padrão
         if desvio_vals:
@@ -49,6 +55,16 @@ def calculate_person_stats(person_id):
                 results['desvio'] = statistics.stdev(desvio_vals)
             else:
                  results['desvio'] = 0.0
+            
+            desvio_media = statistics.mean(desvio_vals)
+            results['desvio_media'] = desvio_media
+             
+            results['desvio_chart'] = [
+                {'index': i+1, 'value': v, 'deviation': abs(v - desvio_media)} 
+                for i, v in enumerate(desvio_vals)
+            ]
+        else:
+             results['desvio_chart'] = []
 
         person.stats = results
         person.save(update_fields=['stats', 'modified_date'])
