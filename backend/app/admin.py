@@ -11,6 +11,7 @@ class PersonAdmin(admin.ModelAdmin):
     "id",
     "person_name",
     "media_raw",
+    "variancia_raw",
     "desvio_raw",
     "stats",
     "created_date",
