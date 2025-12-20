@@ -10,9 +10,14 @@ class PersonAdmin(admin.ModelAdmin):
   list_display = (
     "id",
     "person_name",
+    "media_raw",
+    "variancia_raw",
+    "desvio_raw",
+    "stats",
     "created_date",
     "modified_date",
   )
+  readonly_fields = ("stats",)
 
   search_fields = ("person_name",)
   ordering = ("-created_date",)

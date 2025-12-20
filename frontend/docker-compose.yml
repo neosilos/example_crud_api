@@ -1,9 +1,0 @@
-services:
-  frontend:
-    build: .
-    env_file:
-      - .env
-    image: frontend_react:latest
-    container_name: frontend
-    ports:
-      - "3000:3000"
