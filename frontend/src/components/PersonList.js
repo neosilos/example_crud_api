@@ -24,7 +24,25 @@ function PersonList({ persons, onEdit, onDelete, onPrev, onNext, hasPrev, hasNex
                 <span>
                   <strong>{person.person_name}</strong>
                   <br />
-                  <small>{formatHobbies(person.hobbies)}</small>
+                  <small>Hobbies: {formatHobbies(person.hobbies)}</small>
+                  {person.stats && (
+                    <div className="mt-1 small">
+                      {person.stats.media && (
+                        <div className="text-secondary">
+                          <strong>Média (Input):</strong> {person.stats.media.media?.toFixed(2)} |
+                          Var: {person.stats.media.variancia?.toFixed(2)} |
+                          Desv: {person.stats.media.desvio?.toFixed(2)}
+                        </div>
+                      )}
+                      {person.stats.desvio && (
+                        <div className="text-secondary">
+                          <strong>Desvio (Input):</strong> {person.stats.desvio.media?.toFixed(2)} |
+                          Var: {person.stats.desvio.variancia?.toFixed(2)} |
+                          Desv: {person.stats.desvio.desvio?.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </span>
                 <span>
                   <button
