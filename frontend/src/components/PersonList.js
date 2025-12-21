@@ -1,8 +1,9 @@
 // This component displays a list of the retrieved persons.
 import PersonForm from "./PersonForm";
 import PersonEntry from "./PersonEntry";
+import EditPersonModal from "./EditPersonModal";
 
-function PersonList({persons, onDeletePerson}){
+function PersonList({persons, onDeletePerson, onUpdatePerson}) {
     if(persons.length === 0){
         return <p>No persons found.</p>;
     }
@@ -12,7 +13,7 @@ function PersonList({persons, onDeletePerson}){
         
         <ul className="list-group mb-3">
             {persons.map((person) => (
-                <PersonEntry key={person.id} person={person} onDeletePerson={onDeletePerson} className="list-group-item d-flex justify-content-between"/>
+                <PersonEntry key={person.id} person={person} onDeletePerson={onDeletePerson} onUpdatePerson={onUpdatePerson} className="list-group-item d-flex justify-content-between"/>
             ))}
         </ul>
 

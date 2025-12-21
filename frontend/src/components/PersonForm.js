@@ -1,11 +1,18 @@
 // This component is a form to create and add a new person.
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-function PersonForm({ onCreatePerson }) {
+function PersonForm({ onCreatePerson, updatingPerson, onUpdatePerson }) {
     const [person_name, setPersonName] = useState("");
     const [hobbies, setHobbies] = useState("");
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (updatingPerson) {
+            setPersonName(updatingPerson.person_name);
+            setHobbies(updatingPerson.hobbies.join(", "));
+        }
+    }, [updatingPerson]);
+    
     const handleSubmit = async () => {
         setLoading(true);
 

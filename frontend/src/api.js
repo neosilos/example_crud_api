@@ -34,3 +34,22 @@ export async function deletePerson(person){
   
     return true;
 }
+
+export async function updatePerson(id, payload) {
+    const response = await fetch(
+        `http://localhost:8001/api/persons/${id}/`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to update person");
+    }
+
+    return response.json();
+}
