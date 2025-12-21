@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import PersonForm from "./components/PersonForm";
 import PersonList from "./components/PersonList";
-import { createPerson, deletePerson, getPeople } from "./api";
+import EditPersonModal from "./components/EditPersonModal";
+import { createPerson, deletePerson, getPeople, updatePerson } from "./api";
 
 function App() {
     const [persons, setPersons] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [updatingPerson, setUpdatingPerson] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         async function loadPeople() {
@@ -30,20 +33,47 @@ function App() {
 
 
     const handleDeletePerson = async (person_id) => {
-        
-        if(!window.confirm("Are you sure you want to delete this person?")){
+
+        if (!window.confirm("Are you sure you want to delete this person?")) {
             return;
         }
 
-        try{
-            await deletePerson({id: person_id});
+        try {
+            await deletePerson({ id: person_id });
             setPersons((prevPersons) => prevPersons.filter((p) => p.id !== person_id));
-        } catch (err){
+        } catch (err) {
             console.error(err);
             alert("Error deleting person");
         }
     }
 
+    const handleEditClick = (person_data) => {
+        setUpdatingPerson(person_data);
+        setShowEditModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowEditModal(false);
+        setUpdatingPerson(null);
+    };
+
+    const handleUpdatePerson = (person_data) => {
+        handleEditClick(person_data);
+    }
+
+    const handleSavePerson = async (id, payload) => {
+        try {
+            const updated = await updatePerson(id, payload);
+
+            setPersons(prev =>
+                prev.map(p => (p.id === id ? updated : p))
+            );
+        } catch (err) {
+            console.error(err);
+            alert("Error updating person");
+            throw err;
+        }
+    };
 
     return (
         <div className="container mt-4">
@@ -53,8 +83,16 @@ function App() {
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <PersonList persons={persons} onDeletePerson={handleDeletePerson} />
+                <PersonList persons={persons} onDeletePerson={handleDeletePerson} onUpdatePerson={handleUpdatePerson} />
             )}
+            <EditPersonModal
+                show={showEditModal}
+                person_data={updatingPerson}
+                onClose={handleCloseModal}
+                onSave={handleSavePerson}
+            />
+
+
         </div>
     )
 }
