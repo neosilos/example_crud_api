@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import PersonForm from "./components/PersonForm";
 import PersonList from "./components/PersonList";
-import { createPerson, getPeople } from "./api";
+import { createPerson, deletePerson, getPeople } from "./api";
+
 function App() {
     const [persons, setPersons] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -27,6 +28,23 @@ function App() {
         setPersons((prevPersons) => [...prevPersons, newPerson]);
     }
 
+
+    const handleDeletePerson = async (person_id) => {
+        
+        if(!window.confirm("Are you sure you want to delete this person?")){
+            return;
+        }
+
+        try{
+            await deletePerson({id: person_id});
+            setPersons((prevPersons) => prevPersons.filter((p) => p.id !== person_id));
+        } catch (err){
+            console.error(err);
+            alert("Error deleting person");
+        }
+    }
+
+
     return (
         <div className="container mt-4">
             <h3>Person CRUD Demo</h3>
@@ -35,7 +53,7 @@ function App() {
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <PersonList persons={persons} />
+                <PersonList persons={persons} onDeletePerson={handleDeletePerson} />
             )}
         </div>
     )

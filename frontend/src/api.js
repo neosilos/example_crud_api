@@ -23,3 +23,14 @@ export async function getPeople(){
     }
     return response.json();
 }
+
+export async function deletePerson(person){
+    const response = await fetch(`${API_URL}/api/persons/${person.id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok){
+        throw new Error("Failed to delete person");
+    }
+  
+    return true;
+}
