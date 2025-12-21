@@ -2,7 +2,7 @@
 import PersonForm from "./PersonForm";
 import PersonEntry from "./PersonEntry";
 
-function PersonList({persons}){
+function PersonList({persons, onDeletePerson}){
     if(persons.length === 0){
         return <p>No persons found.</p>;
     }
@@ -12,7 +12,7 @@ function PersonList({persons}){
         
         <ul className="list-group mb-3">
             {persons.map((person) => (
-                <PersonEntry key={person.id} person={person} className="list-group-item d-flex justify-content-between"/>
+                <PersonEntry key={person.id} person={person} onDeletePerson={onDeletePerson} className="list-group-item d-flex justify-content-between"/>
             ))}
         </ul>
 

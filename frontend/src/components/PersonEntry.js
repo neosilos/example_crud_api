@@ -1,16 +1,17 @@
 // This component represents a person entry on the list.
 
-function PersonEntry({ person }) {
+function PersonEntry({ person, onDeletePerson }) {
+    console.log("PersonEntry render:", person);
     return (
         <li className="list-group-item d-flex justify-content-between">
             <span>
                 <strong>{person.person_name}</strong>
-                <br />
+                <br /> 
                 <small>Hobbies: {person.hobbies.join(", ")}</small>
             </span>
             <span>
                 <button className="btn btn-sm btn-outline-primary me-2">Edit</button>
-                <button className="btn btn-sm btn-outline-danger">Delete</button>
+                <button className="btn btn-sm btn-outline-danger" onClick={() => onDeletePerson(person.id)}>Delete</button>
             </span>
         </li>
     );
