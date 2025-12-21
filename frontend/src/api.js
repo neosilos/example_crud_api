@@ -16,8 +16,8 @@ export async function createPerson(person) {
   return response.json();
 }
 
-export async function getPeople(){
-    const response = await fetch(`${API_URL}/api/persons/`);
+export async function getPeople(limit = 10, offset = 0) {
+    const response = await fetch(`${API_URL}/api/persons/?limit=${limit}&offset=${offset}`);
     if (!response.ok) {
         throw new Error("Failed to fetch persons");
     }
