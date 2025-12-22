@@ -1,3 +1,5 @@
+// This component provides a modal dialog for editing a person's information.
+
 import React from "react";
 import { useState, useEffect } from "react";
 

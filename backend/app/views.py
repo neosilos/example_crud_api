@@ -109,18 +109,6 @@ class LongTaskStatusView(APIView):
     )
 
 
-# def start_experience_statistics_task(request):
-#     """
-#     Starts the compute_experience_statistics Celery task.
-#     """
-#     task = compute_experience_statistics.delay()
-#     return Response(
-#         {
-#             "task_id": task.id,
-#             "status": "accepted"
-#         },
-#         status=status.HTTP_202_ACCEPTED
-#     )
 class start_experience_statistics_task(APIView):
     """
     Starts the compute_experience_statistics Celery task.
@@ -136,28 +124,6 @@ class start_experience_statistics_task(APIView):
             status=status.HTTP_202_ACCEPTED
         )
     
-
-# def get_latest_experience_statistics(request):
-#     """
-#     Retrieves the latest computed experience statistics.
-#     """
-#     stats = ExperienceStatistics.objects.latest('created_at')
-
-#     if not stats:
-#         return Response(
-#             {"detail": "No statistics available to compute."},
-#             status=status.HTTP_404_NOT_FOUND
-#         )
-    
-#     return Response(
-#         {
-#             "mean": stats.mean,
-#             "std_dev": stats.std_dev,
-#             "count": stats.count,
-#             "created_at": stats.created_at
-#         },
-#         status=status.HTTP_200_OK
-#     )
 
 class get_latest_experience_statistics(APIView):
     """

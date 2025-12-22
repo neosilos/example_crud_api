@@ -1,3 +1,5 @@
+// This component displays statistics about years of experience of all persons
+
 import { useEffect, useState } from "react";
 import {
     startExperienceStatisticsTask,
@@ -12,7 +14,6 @@ function ExperienceStatsPanel() {
         setLoading(true);
         await startExperienceStatisticsTask();
 
-        // espera simples antes de buscar
         setTimeout(async () => {
             const data = await getLatestExperienceStatistics();
             setStats(data);

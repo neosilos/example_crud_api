@@ -8,7 +8,7 @@ function PersonEntry({ person, onDeletePerson, onUpdatePerson }) {
                 <strong>{person.person_name}</strong>
                 <br />
                 <small>Hobbies: {person.hobbies.join(", ")}</small>
-                {person.years_of_experience != null && (
+                {person.years_of_experience != null && ( 
                     <small> | Years of Experience: {person.years_of_experience}</small>
                 )}            </span>
             <span>

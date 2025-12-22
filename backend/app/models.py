@@ -19,6 +19,9 @@ class Person(models.Model):
         return self.person_name
     
 class ExperienceStatistics(models.Model):
+    """
+    Model to store statistics about years of experience.
+    """
     mean = models.FloatField()
     std_dev = models.FloatField()
     count = models.PositiveIntegerField()

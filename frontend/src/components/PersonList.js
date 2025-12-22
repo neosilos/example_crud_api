@@ -1,4 +1,5 @@
 // This component displays a list of the retrieved persons.
+
 import PersonForm from "./PersonForm";
 import PersonEntry from "./PersonEntry";
 import EditPersonModal from "./EditPersonModal";
