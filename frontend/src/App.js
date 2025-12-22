@@ -15,25 +15,34 @@ function App() {
     const [count, setCount] = useState(0);
     const [limit] = useState(10);
     const [offset, setOffset] = useState(0);
-    useEffect(() => {
-        async function loadPeople() {
-            setLoading(true);
-            try {
-                const data = await getPeople(limit, offset);
-                setPersons(data.results);
-                setNext(data.next);
-                setPrevious(data.previous);
-                setCount(data.count);
-            } catch (err) {
-                alert("Error fetching people data");
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        loadPeople();
-    }, [limit, offset]);
+    const [ordering, setOrdering] = useState("person_name");
+    const [search, setSearch] = useState("");
 
+
+
+    const loadPeople = async () => {
+        setLoading(true);
+        try {
+            const data = await getPeople(limit, offset, ordering, search);
+            setPersons(data.results);
+            setNext(data.next);
+            setPrevious(data.previous);
+            setCount(data.count);
+        } catch (err) {
+            alert("Error fetching people data");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            loadPeople();
+        }, 400);
+
+        return () => clearTimeout(timeout);
+    }, [limit, offset, ordering, search]);
     const handleCreatePerson = async (person_data) => {
         const newPerson = await createPerson(person_data);
         setPersons((prevPersons) => [...prevPersons, newPerson]);
@@ -100,15 +109,15 @@ function App() {
             <h3>Person CRUD Demo</h3>
 
             <PersonForm onCreatePerson={handleCreatePerson} />
-            {loading ? (
-                <p>Loading...</p>
-            ) : (
-                <PersonList persons={persons} onDeletePerson={handleDeletePerson} onUpdatePerson={handleUpdatePerson} 
+            <PersonList persons={persons} onDeletePerson={handleDeletePerson} onUpdatePerson={handleUpdatePerson}
                 onNextPage={handleNextPage} onPreviousPage={handlePreviousPage} hasNext={!!next} hasPrevious={!!previous}
-                />
-            )}
+                ordering={ordering} setOrdering={setOrdering} search={search} setSearch={setSearch}
+                loading={loading} setLoading={setLoading}
+            />
+
             <EditPersonModal
                 show={showEditModal}
+
                 person_data={updatingPerson}
                 onClose={handleCloseModal}
                 onSave={handleSavePerson}
