@@ -3,6 +3,7 @@ import PersonForm from "./components/PersonForm";
 import PersonList from "./components/PersonList";
 import EditPersonModal from "./components/EditPersonModal";
 import LongTaskPanel from "./components/LongTaskPanel";
+import ExperienceStatsPanel from "./components/ExperienceStatsPanel";
 import { createPerson, deletePerson, getPeople, updatePerson } from "./api";
 
 function App() {
@@ -123,7 +124,7 @@ function App() {
                 onSave={handleSavePerson}
             />
             <LongTaskPanel />
-
+            <ExperienceStatsPanel />
 
         </div>
     )

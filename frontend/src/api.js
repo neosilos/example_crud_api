@@ -1,19 +1,19 @@
 const API_URL = "http://localhost:8001";
 
 export async function createPerson(person) {
-  const response = await fetch(`${API_URL}/api/persons/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(person),
-  });
+    const response = await fetch(`${API_URL}/api/persons/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(person),
+    });
 
-  if (!response.ok) {
-    throw new Error("Failed to create person");
-  }
+    if (!response.ok) {
+        throw new Error("Failed to create person");
+    }
 
-  return response.json();
+    return response.json();
 }
 
 export async function getPeople(limit = 10, offset = 0, ordering = "person_name", search = "") {
@@ -24,14 +24,14 @@ export async function getPeople(limit = 10, offset = 0, ordering = "person_name"
     return response.json();
 }
 
-export async function deletePerson(person){
+export async function deletePerson(person) {
     const response = await fetch(`${API_URL}/api/persons/${person.id}`, {
         method: "DELETE",
     });
-    if (!response.ok){
+    if (!response.ok) {
         throw new Error("Failed to delete person");
     }
-  
+
     return true;
 }
 
@@ -54,25 +54,42 @@ export async function updatePerson(id, payload) {
     return response.json();
 }
 
-export async function startLongTask(){
+export async function startLongTask() {
     const response = await fetch(`${API_URL}/api/long-task/`, { method: "POST" });
 
-    if (!response.ok){
+    if (!response.ok) {
         throw new Error("Failed to start long task");
     }
 
     return response.json();
 }
 
-export async function getTaskStatus(taskId){
+export async function getTaskStatus(taskId) {
     const response = await fetch(
         `${API_URL}/api/long-task/${taskId}/`
     );
-    
-    if (!response.ok){
+
+    if (!response.ok) {
         throw new Error("Failed to fetch task status");
     }
-    
+
     return response.json();
 
+}
+
+export async function startExperienceStatisticsTask() {
+    const response = await fetch(
+        `${API_URL}/api/persons/experience-stats/start/`,
+        { method: "POST" }
+    );
+    if (!response.ok) throw new Error("Failed to start task");
+    return response.json();
+}
+
+export async function getLatestExperienceStatistics() {
+    const response = await fetch(
+        `${API_URL}/api/persons/experience-stats/latest/`
+    );
+    if (!response.ok) throw new Error("No statistics available");
+    return response.json();
 }

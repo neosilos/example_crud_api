@@ -10,3 +10,4 @@ def long_running_task(self):
     """
     time.sleep(10)
     return {"status": "completed"}
+
