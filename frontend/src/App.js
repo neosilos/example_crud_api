@@ -16,7 +16,7 @@ function App() {
     const [count, setCount] = useState(0);
     const [limit] = useState(10);
     const [offset, setOffset] = useState(0);
-    const [ordering, setOrdering] = useState("person_name");
+    const [ordering, setOrdering] = useState("-created_date");
     const [search, setSearch] = useState("");
 
 
