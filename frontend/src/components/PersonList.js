@@ -1,4 +1,5 @@
 // This component displays a list of the retrieved persons.
+
 import PersonForm from "./PersonForm";
 import PersonEntry from "./PersonEntry";
 import EditPersonModal from "./EditPersonModal";
@@ -20,10 +21,10 @@ function PersonList({ persons, onDeletePerson, onUpdatePerson, onNextPage, onPre
                     value={ordering}
                     onChange={(e) => setOrdering(e.target.value)}
                 >
+                    <option value="-created_date">Newest first</option>
+                    <option value="created_date">Oldest first</option>
                     <option value="person_name">Name (A–Z)</option>
                     <option value="-person_name">Name (Z–A)</option>
-                    <option value="created_date">Oldest first</option>
-                    <option value="-created_date">Newest first</option>
                 </select>
             </div>
 

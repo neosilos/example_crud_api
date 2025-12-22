@@ -8,8 +8,8 @@ function PersonEntry({ person, onDeletePerson, onUpdatePerson }) {
                 <strong>{person.person_name}</strong>
                 <br />
                 <small>Hobbies: {person.hobbies.join(", ")}</small>
-                {person.years_of_experience != null && (
-                    <small> Years of Experience: {person.years_of_experience}</small>
+                {person.years_of_experience != null && ( 
+                    <small> | Years of Experience: {person.years_of_experience}</small>
                 )}            </span>
             <span>
                 <button className="btn btn-sm btn-outline-primary me-2" onClick={() => onUpdatePerson(person)}>Edit</button>

@@ -2,11 +2,6 @@
 import { useEffect, useState } from "react";
 import { startLongTask, getTaskStatus } from "../api";
 
-//   <h5>Long Async Task</h5>
-//   <button class="btn btn-warning">Start Task</button>
-//   <div>Status: STARTED</div>
-//   <div class="mb-2"><strong>Task ID:</strong><br><code>33489ea7-fb00-4e21-9ac2-17fcd6930b53</code></div>
-
 function LongTaskPanel() {
     const [taskStatus, setTaskStatus] = useState(null);
     const [taskId, setTaskId] = useState(null);
@@ -44,7 +39,7 @@ function LongTaskPanel() {
                 console.error("Error fetching task status", err);
                 clearInterval(interval);
             }
-        }, 2000); // Update every 2 seconds
+        }, 2000); // Updates every 2 seconds
 
         return () => clearInterval(interval);
     }, [taskId]);

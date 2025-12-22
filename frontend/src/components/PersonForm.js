@@ -1,4 +1,5 @@
 // This component is a form to create and add a new person.
+
 import {useEffect, useState} from "react";
 
 function PersonForm({ onCreatePerson, updatingPerson, onUpdatePerson }) {
