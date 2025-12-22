@@ -53,3 +53,26 @@ export async function updatePerson(id, payload) {
 
     return response.json();
 }
+
+export async function startLongTask(){
+    const response = await fetch(`${API_URL}/api/long-task/`, { method: "POST" });
+
+    if (!response.ok){
+        throw new Error("Failed to start long task");
+    }
+
+    return response.json();
+}
+
+export async function getTaskStatus(taskId){
+    const response = await fetch(
+        `${API_URL}/api/long-task/${taskId}/`
+    );
+    
+    if (!response.ok){
+        throw new Error("Failed to fetch task status");
+    }
+    
+    return response.json();
+
+}
