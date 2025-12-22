@@ -3,7 +3,7 @@ import PersonForm from "./PersonForm";
 import PersonEntry from "./PersonEntry";
 import EditPersonModal from "./EditPersonModal";
 
-function PersonList({persons, onDeletePerson, onUpdatePerson}) {
+function PersonList({persons, onDeletePerson, onUpdatePerson, onNextPage, onPreviousPage, hasNext, hasPrevious}) {
     if(persons.length === 0){
         return <p>No persons found.</p>;
     }
@@ -18,8 +18,8 @@ function PersonList({persons, onDeletePerson, onUpdatePerson}) {
         </ul>
 
         <div className="d-flex justify-content-between">
-            <button className="btn btn-secondary">Previous</button>
-            <button className="btn btn-secondary">Next</button>
+            <button className="btn btn-secondary" onClick={onPreviousPage} disabled={!hasPrevious}>Previous</button>
+            <button className="btn btn-secondary" onClick={onNextPage} disabled={!hasNext}>Next</button>
         </div>
         </>
     );

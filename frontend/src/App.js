@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PersonForm from "./components/PersonForm";
 import PersonList from "./components/PersonList";
 import EditPersonModal from "./components/EditPersonModal";
+import LongTaskPanel from "./components/LongTaskPanel";
 import { createPerson, deletePerson, getPeople, updatePerson } from "./api";
 
 function App() {
@@ -9,13 +10,20 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [updatingPerson, setUpdatingPerson] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
-
+    const [next, setNext] = useState(null);
+    const [previous, setPrevious] = useState(null);
+    const [count, setCount] = useState(0);
+    const [limit] = useState(10);
+    const [offset, setOffset] = useState(0);
     useEffect(() => {
         async function loadPeople() {
             setLoading(true);
             try {
-                const data = await getPeople();
+                const data = await getPeople(limit, offset);
                 setPersons(data.results);
+                setNext(data.next);
+                setPrevious(data.previous);
+                setCount(data.count);
             } catch (err) {
                 alert("Error fetching people data");
                 console.error(err);
@@ -24,7 +32,7 @@ function App() {
             }
         }
         loadPeople();
-    }, []);
+    }, [limit, offset]);
 
     const handleCreatePerson = async (person_data) => {
         const newPerson = await createPerson(person_data);
@@ -75,6 +83,18 @@ function App() {
         }
     };
 
+    const handleNextPage = () => {
+        if (next) {
+            setOffset(offset + limit);
+        }
+    }
+
+    const handlePreviousPage = () => {
+        if (previous) {
+            setOffset(Math.max(0, offset - limit));
+        }
+    }
+
     return (
         <div className="container mt-4">
             <h3>Person CRUD Demo</h3>
@@ -83,7 +103,9 @@ function App() {
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <PersonList persons={persons} onDeletePerson={handleDeletePerson} onUpdatePerson={handleUpdatePerson} />
+                <PersonList persons={persons} onDeletePerson={handleDeletePerson} onUpdatePerson={handleUpdatePerson} 
+                onNextPage={handleNextPage} onPreviousPage={handlePreviousPage} hasNext={!!next} hasPrevious={!!previous}
+                />
             )}
             <EditPersonModal
                 show={showEditModal}
@@ -91,6 +113,7 @@ function App() {
                 onClose={handleCloseModal}
                 onSave={handleSavePerson}
             />
+            <LongTaskPanel />
 
 
         </div>
