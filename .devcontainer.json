@@ -1,0 +1,22 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  "runArgs": [
+    "--device=/dev/net/tun",
+    "--hostname",
+    "container"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {},
+    "ghcr.io/tailscale/codespace/tailscale": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": "false"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
+  },
+  "forwardPorts": [3000, 8001, 5432, 6379],
+}
