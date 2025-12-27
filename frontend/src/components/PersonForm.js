@@ -1,60 +1,52 @@
 /**
- * PersonForm.js - Formulário para criar e editar pessoas
+ * PersonForm.js - Form to create and edit persons
  * 
- * Componente controlado que gerencia os campos do formulário.
- * Suporta modo de criação e edição.
+ * Controlled component that manages form fields.
+ * Supports create and edit modes.
  */
 import React, { useState, useEffect, useRef } from 'react';
 
 /**
- * @param {function} onSubmit - Função chamada ao submeter o formulário
- * @param {object} initialData - Dados iniciais para edição
- * @param {boolean} isEditing - Indica se está em modo de edição
- * @param {function} onCancel - Função chamada ao cancelar edição
+ * @param {function} onSubmit - Function called on form submit
+ * @param {object} initialData - Initial data for editing
+ * @param {boolean} isEditing - Indicates edit mode
+ * @param {function} onCancel - Function called on cancel edit
  */
 function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
-  // referência para o formulário (scroll automático)
   const formRef = useRef(null);
   
-  // estado do formulário
   const [personName, setPersonName] = useState('');
   const [hobbies, setHobbies] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // preenche o formulário quando initialData muda (modo edição)
   useEffect(() => {
     if (initialData) {
       setPersonName(initialData.person_name || '');
-      // converte array de hobbies para string separada por vírgulas
       setHobbies(
         Array.isArray(initialData.hobbies) 
           ? initialData.hobbies.join(', ') 
           : ''
       );
-      // scroll suave até o formulário quando entrar em modo edição
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
-      // limpa o formulário quando sai do modo edição
       setPersonName('');
       setHobbies('');
     }
   }, [initialData]);
 
   /**
-   * handler de submit do formulário
+   * Form submit handler.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    // validação básica
     if (!personName.trim()) {
-      setError('O nome é obrigatório');
+      setError('Name is required');
       return;
     }
 
-    // converte string de hobbies para array
     const hobbiesArray = hobbies
       .split(',')
       .map(h => h.trim())
@@ -69,16 +61,15 @@ function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
       });
 
       if (result.success) {
-        // limpa o formulário após sucesso (apenas no modo criação)
         if (!isEditing) {
           setPersonName('');
           setHobbies('');
         }
       } else {
-        setError(result.error || 'Erro ao salvar pessoa');
+        setError(result.error || 'Error saving person');
       }
     } catch (err) {
-      setError('Erro inesperado ao salvar pessoa');
+      setError('Unexpected error saving person');
     } finally {
       setSubmitting(false);
     }
@@ -89,7 +80,6 @@ function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
       <h5>{isEditing ? 'Edit Person' : 'Create Person'}</h5>
       
       <form onSubmit={handleSubmit}>
-        {/* campo de nome */}
         <input
           type="text"
           className="form-control mb-2"
@@ -99,7 +89,6 @@ function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
           disabled={submitting}
         />
 
-        {/* campo de hobbies */}
         <input
           type="text"
           className="form-control mb-2"
@@ -109,14 +98,12 @@ function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
           disabled={submitting}
         />
 
-        {/* mensagem de erro */}
         {error && (
           <div className="text-danger mb-2" style={{ fontSize: '0.875rem' }}>
             {error}
           </div>
         )}
 
-        {/* botões de ação */}
         <div className="d-flex gap-2">
           <button
             type="submit"
@@ -129,7 +116,6 @@ function PersonForm({ onSubmit, initialData, isEditing, onCancel }) {
             }
           </button>
 
-          {/* botão cancelar (apenas no modo edição) */}
           {isEditing && (
             <button
               type="button"

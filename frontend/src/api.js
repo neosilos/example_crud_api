@@ -1,20 +1,19 @@
 /**
- * api.js - Módulo de comunicação com a API Backend
+ * api.js - Backend API communication module
  * 
- * Centraliza todas as chamadas HTTP para a API Django REST Framework.
- * Facilita manutenção e reutilização das operações CRUD.
+ * Centralizes all HTTP calls to the Django REST Framework API.
+ * Facilitates maintenance and reuse of CRUD operations.
  */
 
-// URL base da API - pode ser configurada via variável de ambiente (vide .env)
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8001/api';
 
 /**
- * função auxiliar para fazer requisições HTTP
- * trata erros de forma consistente e converte respostas para JSON
+ * Helper function to make HTTP requests.
+ * Handles errors consistently and converts responses to JSON.
  * 
- * @param {string} endpoint - Endpoint da API (sem a URL base)
- * @param {object} options - Opções do fetch (method, body, headers, etc.)
- * @returns {Promise} - Promise com os dados da resposta
+ * @param {string} endpoint - API endpoint (without base URL)
+ * @param {object} options - Fetch options (method, body, headers, etc.)
+ * @returns {Promise} - Promise with response data
  */
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -34,7 +33,6 @@ async function apiRequest(endpoint, options = {}) {
   try {
     const response = await fetch(url, config);
     
-    // para DELETE, pode não ter corpo na resposta
     if (response.status === 204) {
       return null;
     }
@@ -42,8 +40,7 @@ async function apiRequest(endpoint, options = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-      // cria um erro com informações detalhadas da API
-      const error = new Error(data.detail || 'Erro na requisição');
+      const error = new Error(data.detail || 'Request error');
       error.status = response.status;
       error.data = data;
       throw error;
@@ -51,38 +48,27 @@ async function apiRequest(endpoint, options = {}) {
 
     return data;
   } catch (error) {
-    // lança novamente erros de rede ou erros já tratados
-    console.error(`Erro na requisição ${endpoint}:`, error);
+    console.error(`Request error ${endpoint}:`, error);
     throw error;
   }
 }
 
 /**
- * Lista todas as pessoas com paginação e filtros opcionais
+ * Lists all persons with pagination and optional filters.
  * 
- * @param {string} url - URL completa para paginação (opcional)
- * @param {object} filters - Filtros opcionais { created_after, created_before, modified_after, modified_before }
- * @returns {Promise} - Promise com lista paginada de pessoas
- * 
- * Resposta esperada:
- * {
- *   count: number,
- *   next: string | null,
- *   previous: string | null,
- *   results: Person[]
- * }
+ * @param {string} url - Full URL for pagination (optional)
+ * @param {object} filters - Optional filters { created_after, created_before, modified_after, modified_before }
+ * @returns {Promise} - Promise with paginated list of persons
  */
 export async function listPersons(url = null, filters = {}) {
-  // se uma URL completa for passada (para paginação), usa ela diretamente
   if (url) {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Erro ao buscar pessoas');
+      throw new Error('Error fetching persons');
     }
     return response.json();
   }
   
-  // Constrói query string com filtros
   const params = new URLSearchParams();
   
   if (filters.created_after) {
@@ -105,20 +91,20 @@ export async function listPersons(url = null, filters = {}) {
 }
 
 /**
- * busca uma pessoa específica pelo ID
+ * Fetches a specific person by ID.
  * 
- * @param {number} id - ID da pessoa
- * @returns {Promise} - Promise com os dados da pessoa
+ * @param {number} id - Person ID
+ * @returns {Promise} - Promise with person data
  */
 export async function getPerson(id) {
   return apiRequest(`/persons/${id}/`);
 }
 
 /**
- * cria uma nova pessoa
+ * Creates a new person.
  * 
- * @param {object} personData - Dados da pessoa { person_name, hobbies }
- * @returns {Promise} - Promise com a pessoa criada
+ * @param {object} personData - Person data { person_name, hobbies }
+ * @returns {Promise} - Promise with created person
  */
 export async function createPerson(personData) {
   return apiRequest('/persons/', {
@@ -128,11 +114,11 @@ export async function createPerson(personData) {
 }
 
 /**
- * atualiza uma pessoa existente (atualização parcial)
+ * Updates an existing person (partial update).
  * 
- * @param {number} id - ID da pessoa
- * @param {object} personData - Dados a serem atualizados
- * @returns {Promise} - Promise com a pessoa atualizada
+ * @param {number} id - Person ID
+ * @param {object} personData - Data to update
+ * @returns {Promise} - Promise with updated person
  */
 export async function updatePerson(id, personData) {
   return apiRequest(`/persons/${id}/`, {
@@ -142,10 +128,10 @@ export async function updatePerson(id, personData) {
 }
 
 /**
- * Remove uma pessoa
+ * Deletes a person.
  * 
- * @param {number} id - ID da pessoa
- * @returns {Promise} - Promise vazia em caso de sucesso
+ * @param {number} id - Person ID
+ * @returns {Promise} - Empty promise on success
  */
 export async function deletePerson(id) {
   return apiRequest(`/persons/${id}/`, {
@@ -153,12 +139,10 @@ export async function deletePerson(id) {
   });
 }
 
-// Os métodos a seguir ainda precisam ser revisados TODO
-
 /**
- * inicia uma tarefa assíncrona de longa duração
+ * Starts a long-running async task.
  * 
- * @returns {Promise} - Promise com { task_id, status: "accepted" }
+ * @returns {Promise} - Promise with { task_id, status: "accepted" }
  */
 export async function startLongTask() {
   return apiRequest('/long-task/', {
@@ -167,27 +151,20 @@ export async function startLongTask() {
 }
 
 /**
- * Verifica o status de uma tarefa assíncrona
+ * Checks the status of an async task.
  * 
- * @param {string} taskId - UUID da tarefa
- * @returns {Promise} - Promise com { task_id, state, result }
- * 
- * Estados possíveis:
- * - PENDING: Aguardando execução
- * - STARTED: Em execução
- * - RETRY: Será reexecutada
- * - FAILURE: Falhou
- * - SUCCESS: Concluída com sucesso
+ * @param {string} taskId - Task UUID
+ * @returns {Promise} - Promise with { task_id, state, result }
  */
 export async function getTaskStatus(taskId) {
   return apiRequest(`/long-task/${taskId}/`);
 }
 
 /**
- * Inicia uma tarefa assíncrona para calcular estatísticas (média e desvio padrão)
+ * Starts an async task to calculate statistics (mean and standard deviation).
  * 
- * @param {number[]} values - Lista de valores numéricos
- * @returns {Promise} - Promise com { task_id, status: "accepted", values_count }
+ * @param {number[]} values - List of numeric values
+ * @returns {Promise} - Promise with { task_id, status: "accepted", values_count }
  */
 export async function startStatisticsTask(values) {
   return apiRequest('/statistics/', {

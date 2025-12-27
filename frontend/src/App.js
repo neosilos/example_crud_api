@@ -1,15 +1,13 @@
 /**
- * App.js - Componente principal da aplicação
+ * App.js - Main application component
  * 
- * Gerencia o estado global e coordena os componentes filhos.
- * Responsável pela lógica de CRUD e comunicação com a API.
+ * Manages global state and coordinates child components.
+ * Handles CRUD logic and API communication.
  */
 import React, { useState, useEffect, useCallback } from 'react';
 
-// Importa funções da API
 import { listPersons, createPerson, updatePerson, deletePerson } from './api';
 
-// Importa componentes
 import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
 import DateFilter from './components/DateFilter';
@@ -18,7 +16,6 @@ import StatisticsPanel from './components/StatisticsPanel';
 
 function App() {
   
-  // Lista de pessoas e dados de paginação
   const [persons, setPersons] = useState([]);
   const [pagination, setPagination] = useState({
     count: 0,
@@ -26,23 +23,19 @@ function App() {
     previous: null,
   });
   
-  // Estado de carregamento e erros
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Estado para edição de pessoa
   const [editingPerson, setEditingPerson] = useState(null);
   
-  // Estado para mensagem de sucesso
   const [successMessage, setSuccessMessage] = useState(null);
   
-  // Estado para filtros ativos
   const [activeFilters, setActiveFilters] = useState({});
 
   /**
-   * Carrega a lista de pessoas da API
-   * @param {string} url - URL para paginação (opcional)
-   * @param {object} filters - Filtros de data (opcional)
+   * Loads the list of persons from the API.
+   * @param {string} url - URL for pagination (optional)
+   * @param {object} filters - Date filters (optional)
    */
   const loadPersons = useCallback(async (url = null, filters = {}) => {
     setLoading(true);
@@ -57,97 +50,93 @@ function App() {
         previous: data.previous,
       });
     } catch (err) {
-      setError('Erro ao carregar pessoas. Verifique se a API está rodando.');
-      console.error('Erro ao carregar pessoas:', err);
+      setError('Error loading persons. Check if the API is running.');
+      console.error('Error loading persons:', err);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Carrega pessoas na montagem do componente
   useEffect(() => {
     loadPersons();
   }, [loadPersons]);
 
 
   /**
-   * Handler para criar uma nova pessoa
-   * @param {object} personData - Dados da pessoa { person_name, hobbies }
-   */
-  /**
-   * Exibe mensagem de sucesso temporária
+   * Displays a temporary success message.
    */
   const showSuccess = (message) => {
     setSuccessMessage(message);
     setTimeout(() => setSuccessMessage(null), 3000);
   };
 
+  /**
+   * Handler to create a new person.
+   * @param {object} personData - Person data { person_name, hobbies }
+   */
   const handleCreatePerson = async (personData) => {
     try {
       await createPerson(personData);
-      // Recarrega a lista para mostrar a nova pessoa
       await loadPersons();
-      showSuccess(`Pessoa "${personData.person_name}" criada com sucesso!`);
+      showSuccess(`Person "${personData.person_name}" created successfully!`);
       return { success: true };
     } catch (err) {
-      console.error('Erro ao criar pessoa:', err);
+      console.error('Error creating person:', err);
       return { success: false, error: err.message };
     }
   };
 
   /**
-   * Handler para atualizar uma pessoa existente
-   * @param {number} id - ID da pessoa
-   * @param {object} personData - Dados atualizados
+   * Handler to update an existing person.
+   * @param {number} id - Person ID
+   * @param {object} personData - Updated data
    */
   const handleUpdatePerson = async (id, personData) => {
     try {
       await updatePerson(id, personData);
-      // Limpa o estado de edição e recarrega a lista
       setEditingPerson(null);
       await loadPersons();
-      showSuccess(`Pessoa "${personData.person_name}" atualizada com sucesso!`);
+      showSuccess(`Person "${personData.person_name}" updated successfully!`);
       return { success: true };
     } catch (err) {
-      console.error('Erro ao atualizar pessoa:', err);
+      console.error('Error updating person:', err);
       return { success: false, error: err.message };
     }
   };
 
   /**
-   * Handler para deletar uma pessoa
-   * @param {number} id - ID da pessoa
+   * Handler to delete a person.
+   * @param {number} id - Person ID
    */
   const handleDeletePerson = async (id) => {
     try {
       await deletePerson(id);
-      // Recarrega a lista após deletar
       await loadPersons();
-      showSuccess('Pessoa removida com sucesso!');
+      showSuccess('Person deleted successfully!');
       return { success: true };
     } catch (err) {
-      console.error('Erro ao deletar pessoa:', err);
+      console.error('Error deleting person:', err);
       return { success: false, error: err.message };
     }
   };
 
   /**
-   * Handler para iniciar edição de uma pessoa
-   * @param {object} person - Pessoa a ser editada
+   * Handler to start editing a person.
+   * @param {object} person - Person to edit
    */
   const handleEditPerson = (person) => {
     setEditingPerson(person);
   };
 
   /**
-   * Handler para cancelar edição
+   * Handler to cancel editing.
    */
   const handleCancelEdit = () => {
     setEditingPerson(null);
   };
 
   /**
-   * Handler para aplicar filtros de data
+   * Handler to apply date filters.
    */
   const handleFilter = (filters) => {
     setActiveFilters(filters);
@@ -155,7 +144,7 @@ function App() {
   };
 
   /**
-   * Handler para limpar filtros
+   * Handler to clear filters.
    */
   const handleClearFilter = () => {
     setActiveFilters({});
@@ -163,7 +152,7 @@ function App() {
   };
 
   /**
-   * Navega para a próxima página
+   * Navigates to the next page.
    */
   const handleNextPage = () => {
     if (pagination.next) {
@@ -172,7 +161,7 @@ function App() {
   };
 
   /**
-   * Navega para a página anterior
+   * Navigates to the previous page.
    */
   const handlePreviousPage = () => {
     if (pagination.previous) {
@@ -185,7 +174,6 @@ function App() {
     <div className="container mt-4">
       <h3>Person CRUD Demo</h3>
 
-      {/* Mensagem de sucesso */}
       {successMessage && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
           {successMessage}
@@ -198,7 +186,6 @@ function App() {
         </div>
       )}
 
-      {/* Mensagem de erro global */}
       {error && (
         <div className="error-message">
           {error}
@@ -206,12 +193,11 @@ function App() {
             className="btn btn-link" 
             onClick={() => loadPersons()}
           >
-            Tentar novamente
+            Try again
           </button>
         </div>
       )}
 
-      {/* Formulário para criar/editar pessoa */}
       <PersonForm
         onSubmit={editingPerson 
           ? (data) => handleUpdatePerson(editingPerson.id, data)
@@ -222,14 +208,12 @@ function App() {
         onCancel={handleCancelEdit}
       />
 
-      {/* Filtros por data */}
       <DateFilter
         onFilter={handleFilter}
         onClear={handleClearFilter}
         loading={loading}
       />
 
-      {/* Lista de pessoas */}
       <PersonList
         persons={persons}
         loading={loading}
@@ -238,7 +222,6 @@ function App() {
         editingPersonId={editingPerson?.id}
       />
 
-      {/* Controles de paginação */}
       <div className="pagination-controls d-flex justify-content-between">
         <button
           className="btn btn-secondary"
@@ -248,8 +231,8 @@ function App() {
           Prev
         </button>
         <span className="align-self-center text-muted">
-          {pagination.count} pessoa(s) encontrada(s)
-          {Object.keys(activeFilters).length > 0 && ' (filtrado)'}
+          {pagination.count} person(s) found
+          {Object.keys(activeFilters).length > 0 && ' (filtered)'}
         </span>
         <button
           className="btn btn-secondary"
@@ -262,13 +245,10 @@ function App() {
 
       <hr className="my-4" />
 
-      {/* Seção de funcionalidades extras */}
-      <h4 className="mb-3">Funcionalidades Extras</h4>
+      <h4 className="mb-3">Extra Features</h4>
       
-      {/* Painel de tarefas assíncronas */}
       <LongTaskPanel />
       
-      {/* Painel de estatísticas */}
       <StatisticsPanel />
     </div>
   );

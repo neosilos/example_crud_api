@@ -117,7 +117,7 @@ class LongTaskStatusView(APIView):
 
 class StatisticsTaskView(APIView):
   """
-  Inicia uma tarefa assíncrona para calcular média e desvio padrão.
+  Starts an async task to calculate mean and standard deviation.
   
   POST /api/statistics/
   Body: { "values": [1, 2, 3, 4, 5] }
@@ -129,23 +129,20 @@ class StatisticsTaskView(APIView):
   def post(self, request):
     values = request.data.get('values', [])
     
-    # Validação básica
     if not isinstance(values, list):
       return Response(
-        {"error": "values deve ser uma lista de números"},
+        {"error": "values must be a list of numbers"},
         status=status.HTTP_400_BAD_REQUEST
       )
     
-    # Converte para float e filtra valores inválidos
     try:
       numeric_values = [float(v) for v in values if v is not None]
     except (ValueError, TypeError):
       return Response(
-        {"error": "Todos os valores devem ser numéricos"},
+        {"error": "All values must be numeric"},
         status=status.HTTP_400_BAD_REQUEST
       )
     
-    # Inicia a task do Celery
     task = calculate_statistics_task.delay(numeric_values)
     
     return Response(

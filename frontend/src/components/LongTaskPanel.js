@@ -1,26 +1,24 @@
 /**
- * LongTaskPanel.js - Painel para gerenciar tarefas assíncronas
+ * LongTaskPanel.js - Panel to manage async tasks
  * 
- * Permite iniciar tarefas de longa duração e acompanhar seu status
- * através de polling na API.
+ * Allows starting long-running tasks and monitoring their status
+ * through API polling.
  */
 import React, { useState, useEffect, useRef } from 'react';
 
 import { startLongTask, getTaskStatus } from '../api';
 
 function LongTaskPanel() {
-  // Estado da tarefa
   const [taskId, setTaskId] = useState(null);
   const [taskState, setTaskState] = useState(null);
   const [taskResult, setTaskResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Ref para controlar o intervalo de polling
   const pollingRef = useRef(null);
 
   /**
-   * Inicia uma nova tarefa assíncrona
+   * Starts a new async task.
    */
   const handleStartTask = async () => {
     setError(null);
@@ -31,45 +29,39 @@ function LongTaskPanel() {
       const data = await startLongTask();
       setTaskId(data.task_id);
       setTaskState('PENDING');
-      // inicia o polling para verificar o status
       startPolling(data.task_id);
     } catch (err) {
-      setError('Erro ao iniciar tarefa. Verifique se o Celery está rodando.');
-      console.error('Erro ao iniciar tarefa:', err);
+      setError('Error starting task. Check if Celery is running.');
+      console.error('Error starting task:', err);
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * inicia o polling para verificar status da tarefa
+   * Starts polling to check task status.
    */
   const startPolling = (id) => {
-    // limpa polling anterior se existir
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
     }
 
-    // polling a cada 1 segundo
     pollingRef.current = setInterval(async () => {
       try {
         const status = await getTaskStatus(id);
         setTaskState(status.state);
         
-        // Se a tarefa terminou (sucesso ou falha), para o polling
         if (status.state === 'SUCCESS' || status.state === 'FAILURE') {
           setTaskResult(status.result);
           clearInterval(pollingRef.current);
           pollingRef.current = null;
         }
       } catch (err) {
-        console.error('Erro ao verificar status:', err);
-        // Continua tentando
+        console.error('Error checking status:', err);
       }
     }, 1000);
   };
 
-  // Limpa o polling quando o componente é desmontado
   useEffect(() => {
     return () => {
       if (pollingRef.current) {
@@ -79,7 +71,7 @@ function LongTaskPanel() {
   }, []);
 
   /**
-   * Retorna a classe CSS baseada no estado da tarefa
+   * Returns CSS class based on task state.
    */
   const getStatusClass = () => {
     switch (taskState) {
