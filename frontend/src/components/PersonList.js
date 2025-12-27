@@ -1,28 +1,26 @@
 /**
- * PersonList.js - Lista de pessoas com ações de editar e deletar
+ * PersonList.js - Person list with edit and delete actions
  * 
- * Exibe as pessoas em formato de lista com Bootstrap.
- * Cada item tem botões para editar e deletar.
+ * Displays persons in a Bootstrap list format.
+ * Each item has edit and delete buttons.
  */
 import React, { useState } from 'react';
 
 /**
- * @param {array} persons - Lista de pessoas a exibir
- * @param {boolean} loading - Indica se está carregando
- * @param {function} onEdit - Callback para editar pessoa
- * @param {function} onDelete - Callback para deletar pessoa
- * @param {number} editingPersonId - ID da pessoa sendo editada
+ * @param {array} persons - List of persons to display
+ * @param {boolean} loading - Loading state
+ * @param {function} onEdit - Callback to edit person
+ * @param {function} onDelete - Callback to delete person
+ * @param {number} editingPersonId - ID of person being edited
  */
 function PersonList({ persons, loading, onEdit, onDelete, editingPersonId }) {
-  // estado para controlar qual item está sendo deletado
   const [deletingId, setDeletingId] = useState(null);
 
   /**
-   * handler para deletar pessoa com confirmação
+   * Handler to delete person with confirmation.
    */
   const handleDelete = async (person) => {
-    // confirmação antes de deletar
-    if (!window.confirm(`Tem certeza que deseja deletar "${person.person_name}"?`)) {
+    if (!window.confirm(`Are you sure you want to delete "${person.person_name}"?`)) {
       return;
     }
 
@@ -35,23 +33,21 @@ function PersonList({ persons, loading, onEdit, onDelete, editingPersonId }) {
     }
   };
 
-  // se está carregando, mostra spinner
   if (loading) {
     return (
       <div className="loading-spinner">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
+          <span className="visually-hidden">Loading...</span>
         </div>
       </div>
     );
   }
 
-  // estado vazio
   if (persons.length === 0) {
     return (
       <div className="empty-state">
-        <p>Nenhuma pessoa cadastrada.</p>
-        <small>Use o formulário acima para adicionar a primeira pessoa.</small>
+        <p>No persons registered.</p>
+        <small>Use the form above to add the first person.</small>
       </div>
     );
   }
@@ -74,7 +70,6 @@ function PersonList({ persons, loading, onEdit, onDelete, editingPersonId }) {
               </span>
               <br />
               <small className="person-hobbies">
-                {/* exibe hobbies como JSON string para manter o formato do mock */}
                 {JSON.stringify(person.hobbies)}
               </small>
             </div>

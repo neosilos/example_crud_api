@@ -16,16 +16,15 @@ def long_running_task(self):
 @shared_task(bind=True)
 def calculate_statistics_task(self, values):
     """
-    Calcula média e desvio padrão de uma lista de valores.
-    Simula processamento demorado para demonstrar uso do Celery.
+    Calculates mean and standard deviation from a list of values.
+    Simulates heavy processing to demonstrate Celery usage.
     
     Args:
-        values: Lista de números para calcular estatísticas
+        values: List of numbers to calculate statistics
         
     Returns:
-        dict com mean (média) e std_dev (desvio padrão)
+        dict with mean and std_dev
     """
-    # Simula processamento demorado
     time.sleep(0.5)
     
     if not values or len(values) == 0:
@@ -37,11 +36,8 @@ def calculate_statistics_task(self, values):
         }
     
     n = len(values)
-    
-    # Calcula média
     mean = sum(values) / n
     
-    # Calcula desvio padrão (populacional)
     if n > 1:
         variance = sum((x - mean) ** 2 for x in values) / n
         std_dev = math.sqrt(variance)
