@@ -4,6 +4,17 @@ import { useToast } from "../ToastProvider";
 import ConfirmModal from "./ConfirmModal";
 import EditPersonModal from "./EditPersonModal";
 
+const OrderOptions = Object.freeze({
+    CREATED_DATE: "created",
+    MODIFIED_DATE: "modified",
+    NAME: "name",
+});
+
+const OrderDirections = Object.freeze({
+    ASCENDING: "ascending",
+    DESCENDING: "descending",
+});
+
 /**
  * List of people
  * 
@@ -16,6 +27,10 @@ export default function PersonList({ reloadToken }) {
     const [limit, setLimit] = useState(8);
     const [editingPerson, setEditingPerson] = useState(null);
     const [deletingPerson, setDeletingPerson] = useState(null);
+    const [orderBy, setOrderBy] = useState(OrderOptions.CREATED_DATE);
+    const [orderDirection, setOrderDirection] = useState(OrderDirections.DESCENDING);
+
+    const sortedPersons = getSortedPersons();
 
     useEffect(() => {
         loadPersons();
@@ -40,6 +55,58 @@ export default function PersonList({ reloadToken }) {
 
     function handleNext() {
         setOffset((o) => o + limit);
+    }
+
+    function getSortedPersons() {
+        const arr = [...persons.results];
+
+        console.log(`sorting by ${orderBy} - ${orderDirection}`);
+        switch (orderBy) {
+            case OrderOptions.CREATED_DATE:
+                if (orderDirection === OrderDirections.ASCENDING) {
+                    arr.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+                }
+                else if (orderDirection === OrderDirections.DESCENDING) {
+                    arr.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+                }
+                break;
+
+            case OrderOptions.MODIFIED_DATE:
+                if (orderDirection === OrderDirections.ASCENDING) {
+                    arr.sort((a, b) => new Date(a.modified_date) - new Date(b.modified_date));
+                }
+                else if (orderDirection === OrderDirections.DESCENDING) {
+                    arr.sort((a, b) => new Date(b.modified_date) - new Date(a.modified_date));
+                }
+                break;
+
+            case OrderOptions.NAME:
+                if (orderDirection === OrderDirections.ASCENDING) {
+                    arr.sort((a, b) => a.person_name.localeCompare(b.person_name));
+                }
+                else if (orderDirection === OrderDirections.DESCENDING) {
+                    arr.sort((a, b) => b.person_name.localeCompare(a.person_name));
+                }
+                break;
+
+            // sanity check (this state should be unreachable)
+            // anyways, default to sorting by descending creation date
+            default:
+                console.error("unreachable state: invalid order direction:", orderBy);
+                arr.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+                break;
+        }
+
+        return arr;
+    }
+
+    function toggleOrderDirection() {
+        if (orderDirection === OrderDirections.ASCENDING) {
+            setOrderDirection(OrderDirections.DESCENDING);
+        }
+        else {
+            setOrderDirection(OrderDirections.ASCENDING);
+        }
     }
 
     async function handleEdit(edited) {
@@ -128,8 +195,32 @@ export default function PersonList({ reloadToken }) {
             )}
 
             <h5>Persons</h5>
+
+            {/* Sorting selector */}
+            <div className="mb-2 d-flex align-items-center gap-2">
+                <span className="fw-bold">Order by:</span>
+                <select
+                    className="form-select form-select-md w-auto"
+                    value={orderBy}
+                    onChange={(e) => setOrderBy(e.target.value)}
+                >
+                    <option value={OrderOptions.CREATED_DATE}>Creation date</option>
+                    <option value={OrderOptions.MODIFIED_DATE}>Modification date</option>
+                    <option value={OrderOptions.NAME}>Name</option>
+                </select>
+
+                <button
+                    type="button"
+                    className="btn btn-md btn-outline-secondary"
+                    onClick={() => toggleOrderDirection()}
+                    title="Toggle ascending / descending"
+                >
+                    {orderDirection === OrderDirections.ASCENDING ? "↑" : "↓"}
+                </button>
+            </div>
+
             <ul className="list-group mb-3">
-                {persons.results.map(p => (
+                {sortedPersons.map(p => (
                     <li key={p.id} className="list-group-item d-flex justify-content-between">
                         <span>
                             <strong>{p.person_name}</strong>
