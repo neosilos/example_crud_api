@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { createPerson } from "../api";
 
-export default function PersonForm() {
+/**
+ * Form containing input for person creation.
+ *
+ * @param {function} onPersonCreated - callback that triggers update
+ *     on person dependent components
+ */
+export default function PersonForm({ onPersonCreated }) {
     const [name, setName] = useState("");
     const [hobbies, setHobbies] = useState("");
 
@@ -28,6 +34,9 @@ export default function PersonForm() {
 
         setName("");
         setHobbies("");
+
+        // trigger reload outside this component
+        onPersonCreated();
     }
 
     return (

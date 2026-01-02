@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { fetchPersons } from "../api";
 
-export default function PersonList() {
+/**
+ * List of people
+ * 
+ * @param {number} reloadToken - token used to trigger a list reload on change
+ */
+export default function PersonList({ reloadToken }) {
     const [persons, setPersons] = useState({ results: [], count: 0 });
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(8);
 
     useEffect(() => {
         loadPersons();
-    }, [offset]);
+    }, [reloadToken, offset]);
 
     async function loadPersons() {
         setPersons(await fetchPersons(offset, limit));
