@@ -1,24 +1,69 @@
+import { useState, useEffect } from "react";
+import { fetchPersons } from "../api";
+
 export default function PersonList() {
+    const [persons, setPersons] = useState({ results: [], count: 0 });
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(8);
+
+    useEffect(() => {
+        loadPersons();
+    }, [offset]);
+
+    async function loadPersons() {
+        setPersons(await fetchPersons(offset, limit));
+    }
+
+    function handlePrev() {
+        if (offset < limit) {
+            setOffset(0);
+        }
+        setOffset((o) => o - limit);
+    }
+
+    function handleNext() {
+        setOffset((o) => o + limit);
+    }
+
     return (
         <div>
             <h5>Persons</h5>
-            <ul class="list-group mb-3">
-                <li class="list-group-item d-flex justify-content-between">
-                    <span><strong>Alice</strong><br /><small>["reading","cycling"]</small></span>
-                    <span>
-                        <button class="btn btn-sm btn-outline-secondary me-2">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between">
-                    <span><strong>Alice2</strong><br /><small>["reading2","cycling2"]</small></span>
-                    <span>
-                        <button class="btn btn-sm btn-outline-secondary me-2">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </span>
-                </li>
+            <ul className="list-group mb-3">
+                {persons.results.map(p => (
+                    <li key={p.id} className="list-group-item d-flex justify-content-between">
+                        <span>
+                            <strong>{p.person_name}</strong>
+                            <br />
+                            <small>{p.hobbies.join(",")}</small>
+                        </span>
+                        <span>
+                            <button className="btn btn-sm btn-outline-secondary me-2">
+                                Edit
+                            </button>
+                            <button className="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </span>
+                    </li>
+
+                ))}
             </ul>
-            <div class="d-flex justify-content-between"><button class="btn btn-secondary" disabled="">Prev</button><button class="btn btn-secondary">Next</button></div>
+            <div className="d-flex justify-content-between">
+                <button
+                    onClick={handlePrev}
+                    className="btn btn-secondary"
+                    disabled={offset === 0}
+                >
+                    Prev
+                </button>
+                <button
+                    onClick={handleNext}
+                    className="btn btn-secondary"
+                    disabled={ offset + limit >= persons.count }
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }
