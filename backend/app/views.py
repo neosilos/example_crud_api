@@ -1,7 +1,10 @@
+from app.filters import PersonFilter
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from celery.result import AsyncResult
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Person
 from .serializers import PersonSerializer
@@ -20,7 +23,7 @@ class PersonViewSet(viewsets.ModelViewSet):
   """
   queryset = Person.objects.all().order_by("-created_date")
   serializer_class = PersonSerializer
-
+  filterset_class = PersonFilter
 
 class LongTaskStartView(APIView):
   """

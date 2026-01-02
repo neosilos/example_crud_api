@@ -17,11 +17,25 @@ if (!API_URL) {
  *
  * @param {number} offset - Pagination offset
  * @param {number} limit - Pagination entry limit
+ * @param {string} nameFilter - String to use to filter for person name (Optional)
+ * @param {string} createdBefore - Upper bound filter for creation date (Optional)
+ * @param {string} createdAfter - Lower bound filter for creation date (Optional)
  * @returns {Promise<Object>}
  */
-export async function fetchPersons(offset, limit) {
+export async function fetchPersons(offset, limit, nameFilter, createdBefore, createdAfter) {
     try {
-        const res = await fetch(`${API_URL}/persons/?offset=${offset}&limit=${limit}`);
+        let url = `${API_URL}/persons/?offset=${offset}&limit=${limit}`;
+        if (nameFilter) {
+            url += (`&person_name__icontains=${nameFilter}`);
+        }
+        if (createdBefore) {
+            url += (`&created_before=${createdBefore}`);
+        }
+        if (createdAfter) {
+            url += (`&created_after=${createdAfter}`);
+        }
+
+        const res = await fetch(url);
         const json = await res.json();
         return json;
     }

@@ -27,8 +27,13 @@ export default function PersonList({ reloadToken }) {
     const [limit, setLimit] = useState(8);
     const [editingPerson, setEditingPerson] = useState(null);
     const [deletingPerson, setDeletingPerson] = useState(null);
+
+    // Filtering and sorting related state
     const [orderBy, setOrderBy] = useState(OrderOptions.CREATED_DATE);
     const [orderDirection, setOrderDirection] = useState(OrderDirections.DESCENDING);
+    const [nameFilter, setNameFilter] = useState("");
+    const [createdBefore, setCreatedBefore] = useState("");
+    const [createdAfter, setCreatedAfter] = useState("");
 
     const sortedPersons = getSortedPersons();
 
@@ -43,7 +48,7 @@ export default function PersonList({ reloadToken }) {
     }
 
     async function loadPersons() {
-        setPersons(await fetchPersons(offset, limit));
+        setPersons(await fetchPersons(offset, limit, nameFilter, createdBefore, createdAfter));
     }
 
     function handlePrev() {
@@ -172,8 +177,14 @@ export default function PersonList({ reloadToken }) {
         setDeletingPerson(null);
     }
 
+    function clearFilters() {
+        setNameFilter("");
+        setCreatedBefore("");
+        setCreatedAfter("");
+    }
+
     return (
-        <div>
+        <div className="mb-4">
             {/* Modal for editing a specific person */}
             {editingPerson && (
                 <EditPersonModal
@@ -215,8 +226,70 @@ export default function PersonList({ reloadToken }) {
                     onClick={() => toggleOrderDirection()}
                     title="Toggle ascending / descending"
                 >
-                    {orderDirection === OrderDirections.ASCENDING ? "↑" : "↓"}
+                    {orderDirection === OrderDirections.ASCENDING ?
+                        <i className="bi bi-arrow-up"></i> :
+                        <i className="bi bi-arrow-down"></i>
+                    }
                 </button>
+            </div>
+
+            <div className="mb-2 d-flex align-items-center gap-2">
+                {/* Name filter */}
+                <div className="form-floating mb-2 flex-grow-1">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={nameFilter}
+                        onChange={(e) => setNameFilter(e.target.value)}
+                    />
+                    <label>Name</label>
+                </div>
+
+                {/* Created before */}
+                <div className="form-floating mb-2">
+                    <input
+                        type="date"
+                        className="form-control"
+                        value={createdBefore}
+                        onChange={(e) => setCreatedBefore(e.target.value)}
+                    />
+                    <label>Created before</label>
+                </div>
+
+                {/* Created after */}
+                <div className="form-floating mb-2">
+                    <input
+                        type="date"
+                        className="form-control"
+                        value={createdAfter}
+                        onChange={(e) => setCreatedAfter(e.target.value)}
+                    />
+                    <label>Created after</label>
+                </div>
+
+                {/* Clear filters button */}
+                <div className="form-floating mb-2">
+                    <button
+                        type="button"
+                        className="btn btn-lg btn-outline-secondary"
+                        onClick={clearFilters}
+                        title="Clear Filters"
+                    >
+                        <i className="bi bi-trash"></i>
+                    </button>
+                </div>
+
+                {/* Reload Persons button */}
+                <div className="form-floating mb-2">
+                    <button
+                        type="button"
+                        className="btn btn-lg btn-primary"
+                        onClick={reload}
+                        title="Reload"
+                    >
+                        <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
             </div>
 
             <ul className="list-group mb-3">
