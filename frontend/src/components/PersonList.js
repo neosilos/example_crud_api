@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { deletePerson, fetchPersons, updatePerson } from "../api";
 import { useToast } from "../ToastProvider";
 import ConfirmModal from "./ConfirmModal";
@@ -35,7 +35,9 @@ export default function PersonList({ reloadToken }) {
     const [createdBefore, setCreatedBefore] = useState("");
     const [createdAfter, setCreatedAfter] = useState("");
 
-    const sortedPersons = getSortedPersons();
+    const sortedPersons = useMemo(() => {
+        return getSortedPersons();
+    }, [persons.results, orderBy, orderDirection]);
 
     useEffect(() => {
         loadPersons();
@@ -65,7 +67,6 @@ export default function PersonList({ reloadToken }) {
     function getSortedPersons() {
         const arr = [...persons.results];
 
-        console.log(`sorting by ${orderBy} - ${orderDirection}`);
         switch (orderBy) {
             case OrderOptions.CREATED_DATE:
                 if (orderDirection === OrderDirections.ASCENDING) {
