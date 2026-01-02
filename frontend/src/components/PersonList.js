@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchPersons } from "../api";
+import { deletePerson, fetchPersons, updatePerson } from "../api";
+import ConfirmModal from "./ConfirmModal";
+import EditPersonModal from "./EditPersonModal";
 
 /**
  * List of people
@@ -10,10 +12,18 @@ export default function PersonList({ reloadToken }) {
     const [persons, setPersons] = useState({ results: [], count: 0 });
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(8);
+    const [editingPerson, setEditingPerson] = useState(null);
+    const [deletingPerson, setDeletingPerson] = useState(null);
 
     useEffect(() => {
         loadPersons();
     }, [reloadToken, offset]);
+
+    async function reload() {
+        stopEditing();
+        stopDeleting();
+        loadPersons();
+    }
 
     async function loadPersons() {
         setPersons(await fetchPersons(offset, limit));
@@ -30,8 +40,84 @@ export default function PersonList({ reloadToken }) {
         setOffset((o) => o + limit);
     }
 
+    async function handleEdit(edited) {
+        // No changes, so just ignore edit
+        if (editingPerson.person_name === edited.person_name &&
+            editingPerson.hobbies === edited.hobbies) {
+            stopEditing();
+            return;
+        }
+
+        // person field validation
+        if (edited.person_name === "" || edited.hobbies === "") {
+            stopEditing();
+            return;
+        }
+
+        const hobbiesArray = edited.hobbies.split(",");
+        await updatePerson(editingPerson.id, {
+            person_name: edited.person_name,
+            hobbies: hobbiesArray,
+        });
+
+        reload();
+    }
+
+    function startEditing(person) {
+        setEditingPerson({
+            ...person,
+            person_name: person.person_name,
+            hobbies: person.hobbies.join(","),
+        });
+    }
+
+    function stopEditing() {
+        setEditingPerson(null);
+    }
+
+    async function handleDelete() {
+        // sanity check (this state should be unreachable)
+        if (!deletingPerson) {
+            console.error("Invalid state on PersonList: deleting null person");
+            return;
+        }
+
+
+        await deletePerson(deletingPerson.id);
+
+        reload();
+    }
+
+    function startDeleting(person) {
+        setDeletingPerson(person);
+    }
+
+    function stopDeleting() {
+        setDeletingPerson(null);
+    }
+
     return (
         <div>
+            {/* Modal for editing a specific person */}
+            {editingPerson && (
+                <EditPersonModal
+                    person={editingPerson}
+                    onClose={stopEditing}
+                    onSave={handleEdit}
+                />
+            )}
+
+            {/* Modal for confirming person deletion */}
+            {deletingPerson && (
+                <ConfirmModal
+                    title="Delete person"
+                    message={`Are you sure you want to delete ${deletingPerson.person_name}?`}
+                    confirmText="Delete"
+                    onConfirm={handleDelete}
+                    onCancel={stopDeleting}
+                />
+            )}
+
             <h5>Persons</h5>
             <ul className="list-group mb-3">
                 {persons.results.map(p => (
@@ -42,10 +128,16 @@ export default function PersonList({ reloadToken }) {
                             <small>{p.hobbies.join(",")}</small>
                         </span>
                         <span>
-                            <button className="btn btn-sm btn-outline-secondary me-2">
+                            <button
+                                onClick={ () => startEditing(p) }
+                                className="btn btn-sm btn-outline-secondary me-2"
+                            >
                                 Edit
                             </button>
-                            <button className="btn btn-sm btn-outline-danger">
+                            <button
+                                onClick={ () => startDeleting(p) }
+                                className="btn btn-sm btn-outline-danger"
+                            >
                                 Delete
                             </button>
                         </span>
