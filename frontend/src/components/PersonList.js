@@ -3,6 +3,7 @@ import { deletePerson, fetchPersons, updatePerson } from "../api";
 import { useToast } from "../ToastProvider";
 import ConfirmModal from "./ConfirmModal";
 import EditPersonModal from "./EditPersonModal";
+import { parseTimestamp } from "../util";
 
 const OrderOptions = Object.freeze({
     CREATED_DATE: "created",
@@ -296,23 +297,30 @@ export default function PersonList({ reloadToken }) {
             <ul className="list-group mb-3">
                 {sortedPersons.map(p => (
                     <li key={p.id} className="list-group-item d-flex justify-content-between">
-                        <span>
+                        <span className="col">
                             <strong>{p.person_name}</strong>
                             <br />
                             <small>{p.hobbies.join(",")}</small>
                         </span>
-                        <span>
+                        <span className="col">
+                            <small>Created at: </small>
+                            <strong>{parseTimestamp(p.created_date)}</strong>
+                            <br />
+                            <small>Last modified: </small>
+                            <strong>{parseTimestamp(p.modified_date)}</strong>
+                        </span>
+                        <span className="col d-flex justify-content-end">
                             <button
                                 onClick={ () => startEditing(p) }
-                                className="btn btn-sm btn-outline-secondary me-2"
+                                className="btn btn-md btn-outline-secondary btn-secondary-emphasis my-1 me-2"
                             >
-                                Edit
+                                <i className="bi bi-pencil-square"></i>
                             </button>
                             <button
                                 onClick={ () => startDeleting(p) }
-                                className="btn btn-sm btn-outline-danger"
+                                className="btn btn-md btn-outline-danger my-1"
                             >
-                                Delete
+                                <i className="bi bi-trash"></i>
                             </button>
                         </span>
                     </li>
