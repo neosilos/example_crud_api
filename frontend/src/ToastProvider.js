@@ -44,11 +44,13 @@ function ToastContainer({ toasts, onClose }) {
     return createPortal(
         <div className="toast-container position-fixed bottom-0 end-0 p-3">
             {toasts.map(t => (
-                <div key={t.id} className={`alert alert-${t.variant} mb-2 fade show`}>
-                    <div className="">
-                        {t.message}
+                <div key={t.id} className="toast show mb-2">
+                    <div className={`alert alert-${t.variant} d-flex align-items-center mb-0`}>
+                        <div className="flex-grow-1">
+                            {t.message}
+                        </div>
                         <button
-                            className={`btn-close btn-close-${t.variant}`}
+                            className="btn-close"
                             onClick={() => onClose(t.id)}
                         />
                     </div>
