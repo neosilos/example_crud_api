@@ -24,8 +24,12 @@ const OrderDirections = Object.freeze({
 export default function PersonList({ reloadToken }) {
     const notify = useToast();
     const [persons, setPersons] = useState({ results: [], count: 0 });
+
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(8);
+    const pageNumber = Math.floor(offset / limit) + 1;
+    const pageTotal = Math.ceil(persons.count / limit);
+
     const [editingPerson, setEditingPerson] = useState(null);
     const [deletingPerson, setDeletingPerson] = useState(null);
 
@@ -185,6 +189,22 @@ export default function PersonList({ reloadToken }) {
         setCreatedAfter("");
     }
 
+    /**
+     * this eliminates any divisions by zero
+     *   or treating strings as numbers
+     *
+     * @param {number|string} limit
+     */
+    function setPageLimit(limit) {
+        const l = Number(limit);
+        if (l <= 0) {
+            setLimit(1);
+        }
+        else {
+            setLimit(l);
+        }
+    }
+
     return (
         <div className="mb-4">
             {/* Modal for editing a specific person */}
@@ -327,20 +347,32 @@ export default function PersonList({ reloadToken }) {
 
                 ))}
             </ul>
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-end align-items-center">
+                <label className="form-label mb-1">Items per page</label>
+                <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    className="form-control w-auto mx-2"
+                    value={limit}
+                    onChange={(e) => setPageLimit(parseInt(e.target.value || 1, 10))}
+                />
                 <button
                     onClick={handlePrev}
-                    className="btn btn-secondary"
-                    disabled={offset === 0}
+                    className="btn btn-secondary mx-2"
+                    disabled={pageNumber <= 1}
                 >
-                    Prev
+                    <i className="bi bi-arrow-left"></i>
                 </button>
+                <div>
+                    Page {pageNumber} of {pageTotal}
+                </div>
                 <button
                     onClick={handleNext}
-                    className="btn btn-secondary"
-                    disabled={ offset + limit >= persons.count }
+                    className="btn btn-secondary mx-2"
+                    disabled={pageNumber === pageTotal}
                 >
-                    Next
+                    <i className="bi bi-arrow-right"></i>
                 </button>
             </div>
         </div>
