@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { pollAsyncTask, startAsyncTask } from "../api";
+import { useToast } from "../ToastProvider";
 
 /**
  * LongTaskPanel allows for starting and tracking an asycnhronous task.
  * Once the task is started, the component polls for the task's status every 2 seconds.
  */
 export default function LongTaskPanel() {
+    const notify = useToast();
     const [status, setStatus] = useState("NOT STARTED");
     const [taskId, setTaskId] = useState("");
 
     async function startTask() {
         const task = await startAsyncTask();
         if (!task) {
+            notify("Failed to start task.", "danger");
             return;
         }
 
@@ -23,12 +26,15 @@ export default function LongTaskPanel() {
             setStatus(response.state);
 
             if (response.state === "RETRY") {
+                notify("Async task possibly failed. Please retry.", "warning", 0);
                 clearInterval(polling);
             }
             else if (response.state === "FAILURE") {
+                notify("Async task failed.", "danger", 0);
                 clearInterval(polling);
             }
             else if (response.state === "SUCCESS") {
+                notify("Async task finished successfully.", "success");
                 clearInterval(polling);
             }
         }, 2000);

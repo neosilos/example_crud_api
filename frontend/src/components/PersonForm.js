@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createPerson } from "../api";
+import { useToast } from "../ToastProvider";
 
 /**
  * Form containing input for person creation.
@@ -8,6 +9,7 @@ import { createPerson } from "../api";
  *     on person dependent components
  */
 export default function PersonForm({ onPersonCreated }) {
+    const notify = useToast();
     const [name, setName] = useState("");
     const [hobbies, setHobbies] = useState("");
 
@@ -23,7 +25,12 @@ export default function PersonForm({ onPersonCreated }) {
         e.preventDefault();
 
         // reject empty fields
-        if (name === "" || hobbies === "") {
+        if (name === "") {
+            notify("Person name must not be empty.", "danger");
+            return;
+        }
+        else if (hobbies === "") {
+            notify("Add at least one hobby.", "danger");
             return;
         }
 
@@ -35,6 +42,7 @@ export default function PersonForm({ onPersonCreated }) {
         setName("");
         setHobbies("");
 
+        notify("Person created.", "success");
         // trigger reload outside this component
         onPersonCreated();
     }

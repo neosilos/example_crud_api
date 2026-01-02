@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { deletePerson, fetchPersons, updatePerson } from "../api";
+import { useToast } from "../ToastProvider";
 import ConfirmModal from "./ConfirmModal";
 import EditPersonModal from "./EditPersonModal";
 
@@ -9,6 +10,7 @@ import EditPersonModal from "./EditPersonModal";
  * @param {number} reloadToken - token used to trigger a list reload on change
  */
 export default function PersonList({ reloadToken }) {
+    const notify = useToast();
     const [persons, setPersons] = useState({ results: [], count: 0 });
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(8);
@@ -49,7 +51,13 @@ export default function PersonList({ reloadToken }) {
         }
 
         // person field validation
-        if (edited.person_name === "" || edited.hobbies === "") {
+        if (edited.person_name === "") {
+            notify("Person name must not be empty.", "danger");
+            stopEditing();
+            return;
+        }
+        if (edited.hobbies === "") {
+            notify("Add at least one hobby.", "danger");
             stopEditing();
             return;
         }
@@ -60,6 +68,7 @@ export default function PersonList({ reloadToken }) {
             hobbies: hobbiesArray,
         });
 
+        notify("Person edited.", "info");
         reload();
     }
 
@@ -82,9 +91,9 @@ export default function PersonList({ reloadToken }) {
             return;
         }
 
-
         await deletePerson(deletingPerson.id);
 
+        notify("Person deleted.", "danger");
         reload();
     }
 
