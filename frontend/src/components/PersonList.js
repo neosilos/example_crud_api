@@ -334,7 +334,30 @@ export default function PersonList({ reloadToken }) {
                 </div>
             </div>
 
+            {/* Table Header */}
             <ul className="list-group mb-3">
+                <li className="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center">
+                    <span className="col d-flex flex-column">
+                        <strong>Name</strong>
+                        <span>Hobbies</span>
+                    </span>
+                    <span className="col d-flex justify-content-center">
+                        <strong>Rating</strong>
+                    </span>
+                    <span className="col d-flex justify-content-center">
+                        <strong>Creation date</strong>
+                    </span>
+                    <span className="col d-flex justify-content-center">
+                        <strong>Last modified</strong>
+                    </span>
+                    <span className="col d-flex justify-content-end">
+                        <strong className="me-3">
+                            Actions
+                        </strong>
+                    </span>
+                </li>
+
+                {/* Table data */}
                 {sortedPersons.map(p => (
                     <li key={p.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <span className="col">
@@ -342,16 +365,14 @@ export default function PersonList({ reloadToken }) {
                             <br />
                             <small>{p.hobbies.join(",")}</small>
                         </span>
-                        <span className="col">
-                            <span>Rating: </span>
+                        <span className="col d-flex justify-content-center">
                             <strong>{p.rating}</strong>
                         </span>
-                        <span className="col">
-                            <small>Created at: </small>
-                            <strong>{parseTimestamp(p.created_date)}</strong>
-                            <br />
-                            <small>Last modified: </small>
-                            <strong>{parseTimestamp(p.modified_date)}</strong>
+                        <span className="col d-flex justify-content-center">
+                            <span>{parseTimestamp(p.created_date)}</span>
+                        </span>
+                        <span className="col d-flex justify-content-center">
+                            <span>{parseTimestamp(p.modified_date)}</span>
                         </span>
                         <span className="col d-flex justify-content-end">
                             <button
