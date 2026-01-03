@@ -10,6 +10,7 @@ if (!API_URL) {
  * @property {string[]} hobbies
  * @property {Date} created_date
  * @property {Date} modified_date
+ * @property {number} rating
  **/
 
 /**
@@ -50,12 +51,14 @@ export async function fetchPersons(offset, limit, nameFilter, createdBefore, cre
  *
  * @param {string} name 
  * @param {string[]} hobbies 
+ * @param {number} rating
  * @returns {Promise<Person>}
  */
-export async function createPerson(name, hobbies) {
+export async function createPerson(name, hobbies, rating) {
     const person = {
         person_name: name,
         hobbies,
+        rating,
     };
 
     try {

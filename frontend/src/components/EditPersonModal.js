@@ -41,6 +41,15 @@ export default function EditPersonModal({ person, onClose, onSave }) {
                             onChange={e => setForm({ ...form, hobbies: e.target.value})}
                             className="form-control"
                         />
+                        <h5>Rating</h5>
+                        <input
+                            name="rating"
+                            type="number"
+                            min="1"
+                            value={form.rating}
+                            onChange={e => setForm({ ...form, rating: e.target.value})}
+                            className="form-control"
+                        />
                     </div>
 
                     <div className="modal-footer">

@@ -9,6 +9,7 @@ const OrderOptions = Object.freeze({
     CREATED_DATE: "created",
     MODIFIED_DATE: "modified",
     NAME: "name",
+    RATING: "rating",
 });
 
 const OrderDirections = Object.freeze({
@@ -100,6 +101,15 @@ export default function PersonList({ reloadToken }) {
                 }
                 break;
 
+            case OrderOptions.RATING:
+                if (orderDirection === OrderDirections.ASCENDING) {
+                    arr.sort((a, b) => a.rating - b.rating);
+                }
+                else if (orderDirection === OrderDirections.DESCENDING) {
+                    arr.sort((a, b) => b.rating - a.rating);
+                }
+                break;
+
             // sanity check (this state should be unreachable)
             // anyways, default to sorting by descending creation date
             default:
@@ -121,9 +131,11 @@ export default function PersonList({ reloadToken }) {
     }
 
     async function handleEdit(edited) {
+        const ratingValue = parseInt(edited.rating, 10);
         // No changes, so just ignore edit
         if (editingPerson.person_name === edited.person_name &&
-            editingPerson.hobbies === edited.hobbies) {
+            editingPerson.hobbies === edited.hobbies &&
+            editingPerson.rating === ratingValue) {
             stopEditing();
             return;
         }
@@ -139,11 +151,17 @@ export default function PersonList({ reloadToken }) {
             stopEditing();
             return;
         }
+        if (!ratingValue || ratingValue <= 0) {
+            notify("Invalid rating value", "danger");
+            stopEditing();
+            return;
+        }
 
         const hobbiesArray = edited.hobbies.split(",");
         await updatePerson(editingPerson.id, {
             person_name: edited.person_name,
             hobbies: hobbiesArray,
+            rating: ratingValue,
         });
 
         notify("Person edited.", "info");
@@ -155,6 +173,7 @@ export default function PersonList({ reloadToken }) {
             ...person,
             person_name: person.person_name,
             hobbies: person.hobbies.join(","),
+            rating: person.rating,
         });
     }
 
@@ -240,6 +259,7 @@ export default function PersonList({ reloadToken }) {
                     <option value={OrderOptions.CREATED_DATE}>Creation date</option>
                     <option value={OrderOptions.MODIFIED_DATE}>Modification date</option>
                     <option value={OrderOptions.NAME}>Name</option>
+                    <option value={OrderOptions.RATING}>Rating</option>
                 </select>
 
                 <button
@@ -316,11 +336,15 @@ export default function PersonList({ reloadToken }) {
 
             <ul className="list-group mb-3">
                 {sortedPersons.map(p => (
-                    <li key={p.id} className="list-group-item d-flex justify-content-between">
+                    <li key={p.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <span className="col">
                             <strong>{p.person_name}</strong>
                             <br />
                             <small>{p.hobbies.join(",")}</small>
+                        </span>
+                        <span className="col">
+                            <span>Rating: </span>
+                            <strong>{p.rating}</strong>
                         </span>
                         <span className="col">
                             <small>Created at: </small>
