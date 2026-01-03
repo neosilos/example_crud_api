@@ -1,11 +1,14 @@
+from app.filters import PersonFilter
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from celery.result import AsyncResult
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Person
 from .serializers import PersonSerializer
-from .tasks import long_running_task
+from .tasks import calculate_rating_stats, long_running_task
 
 
 class PersonViewSet(viewsets.ModelViewSet):
@@ -20,7 +23,7 @@ class PersonViewSet(viewsets.ModelViewSet):
   """
   queryset = Person.objects.all().order_by("-created_date")
   serializer_class = PersonSerializer
-
+  filterset_class = PersonFilter
 
 class LongTaskStartView(APIView):
   """
@@ -45,6 +48,22 @@ class LongTaskStartView(APIView):
       },
       status=status.HTTP_202_ACCEPTED
     )
+
+
+class RatingStatsStartView(APIView):
+    """
+        Starts async task to calculate people's rating statistics
+    """
+    def post(self, request):
+        task = calculate_rating_stats.delay()
+
+        return Response(
+            {
+                "task_id": task.id,
+                "state": task.state,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
 
 
 class LongTaskStatusView(APIView):
