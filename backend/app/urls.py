@@ -5,6 +5,7 @@ from .views import (
   PersonViewSet,
   LongTaskStartView,
   LongTaskStatusView,
+  RatingStatsStartView,
 )
 
 router = DefaultRouter()
@@ -13,6 +14,7 @@ router.register(r"persons", PersonViewSet, basename="person")
 urlpatterns = [
   # Async long-running task endpoints
   path("long-task/", LongTaskStartView.as_view(), name="long-task-start"),
+  path("rating-task/", RatingStatsStartView.as_view(), name="rating-task-start"),
   path(
     "long-task/<uuid:task_id>/",
     LongTaskStatusView.as_view(),

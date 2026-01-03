@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Person
 from .serializers import PersonSerializer
-from .tasks import long_running_task
+from .tasks import calculate_rating_stats, long_running_task
 
 
 class PersonViewSet(viewsets.ModelViewSet):
@@ -48,6 +48,22 @@ class LongTaskStartView(APIView):
       },
       status=status.HTTP_202_ACCEPTED
     )
+
+
+class RatingStatsStartView(APIView):
+    """
+        Starts async task to calculate people's rating statistics
+    """
+    def post(self, request):
+        task = calculate_rating_stats.delay()
+
+        return Response(
+            {
+                "task_id": task.id,
+                "state": task.state,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
 
 
 class LongTaskStatusView(APIView):
