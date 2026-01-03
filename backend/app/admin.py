@@ -12,6 +12,7 @@ class PersonAdmin(admin.ModelAdmin):
     "person_name",
     "created_date",
     "modified_date",
+    "rating",
   )
 
   search_fields = ("person_name",)
