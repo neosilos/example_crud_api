@@ -135,6 +135,21 @@ export async function startAsyncTask() {
 }
 
 /**
+ * Start rating task
+ *
+ * @returns {Promise<Task>}
+ */
+export async function startRatingTask() {
+    try {
+        const res = await fetch(`${API_URL}/rating-task/`, { method: "POST" });
+        return await res.json();
+    }
+    catch (e) {
+        failRequest();
+    }
+}
+
+/**
  * Poll for task status by task uuid
  *
  * @param {string} taskId

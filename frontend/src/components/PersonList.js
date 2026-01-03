@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
-import { deletePerson, fetchPersons, updatePerson } from "../api";
+import { deletePerson, fetchPersons, updatePerson, startRatingTask } from "../api";
 import { useToast } from "../ToastProvider";
 import ConfirmModal from "./ConfirmModal";
 import EditPersonModal from "./EditPersonModal";
 import { parseTimestamp } from "../util";
+import { useTaskPoller } from "../hooks/useTaskPoller";
 
 const OrderOptions = Object.freeze({
     CREATED_DATE: "created",
@@ -26,6 +27,9 @@ export default function PersonList({ reloadToken }) {
     const notify = useToast();
     const [persons, setPersons] = useState({ results: [], count: 0 });
 
+    const [taskId, setTaskId] = useState("");
+    const { taskState, taskResult } = useTaskPoller(taskId, 2000);
+
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(8);
     const pageNumber = Math.floor(offset / limit) + 1;
@@ -46,13 +50,14 @@ export default function PersonList({ reloadToken }) {
     }, [persons.results, orderBy, orderDirection]);
 
     useEffect(() => {
-        loadPersons();
+        reload();
     }, [reloadToken, offset]);
 
     async function reload() {
         stopEditing();
         stopDeleting();
         loadPersons();
+        getRatingStats();
     }
 
     async function loadPersons() {
@@ -224,6 +229,11 @@ export default function PersonList({ reloadToken }) {
         }
     }
 
+    async function getRatingStats() {
+        const res = await startRatingTask();
+        setTaskId(res.task_id);
+    }
+
     return (
         <div className="mb-4">
             {/* Modal for editing a specific person */}
@@ -334,8 +344,41 @@ export default function PersonList({ reloadToken }) {
                 </div>
             </div>
 
-            {/* Table Header */}
             <ul className="list-group mb-3">
+                {/* Rating statistics */}
+                {taskState === "SUCCESS" ? (
+                    <li className="list-group-item list-group-item-info">
+                        <span className="col d-flex flex-column mb-2">
+                            <strong>Rating statistics</strong>
+                        </span>
+                        <div className="d-flex justify-content-center align-items-center">
+                            <span className="col d-flex justify-content-center">
+                                <span className="me-1">Average: </span>
+                                <strong> {taskResult.avg}</strong>
+                            </span>
+                            <span className="col d-flex justify-content-center">
+                                <span className="me-1">Std. Deviation: </span>
+                                <strong>{taskResult.std}</strong>
+                            </span>
+                            <span className="col d-flex justify-content-center">
+                                <span className="me-1">Lowest: </span>
+                                <strong>{taskResult.min}</strong>
+                            </span>
+                            <span className="col d-flex justify-content-center">
+                                <span className="me-1">Highest: </span>
+                                <strong>{taskResult.max}</strong>
+                            </span>
+                        </div>
+                    </li>
+                ):
+                    <li className="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
+                        <span className="col d-flex flex-column">
+                            <strong>Loading rating statistics...</strong>
+                        </span>
+                    </li>
+                }
+
+                {/* Table Header */}
                 <li className="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center">
                     <span className="col d-flex flex-column">
                         <strong>Name</strong>
