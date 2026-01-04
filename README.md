@@ -86,7 +86,9 @@ example_crud_api/
 │   │       ├── LongTaskPanel.js
 │   │       ├── PersonForm.js
 │   │       ├── PersonList.js
-│   │       └── StatisticsPanel.js
+│   │       |── StatisticsPanel.js
+│   │       |── ConfirmModal.js
+│   │       └── SearchFilters.js
 │   ├── docker-compose.yml
 │   ├── Dockerfile
 │   └── package.json
